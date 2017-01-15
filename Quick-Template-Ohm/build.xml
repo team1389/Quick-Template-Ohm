@@ -21,67 +21,32 @@
 
 	<!-- Any other property in build.properties can also be overridden. -->
 
-	<property file="${user.home}/wpilib/wpilib.properties"/>
-	<property file="build.properties"/>
-	<property file="${user.home}/wpilib/java/${version}/ant/build.properties"/>
-	<xmlproperty file=".classpath" collapseAttributes="true" delimiter=";" />
-	<path id="eclipse.classpath">
-		<pathelement path="${classpath.classpathentry.path}"/>
+	<property file="${user.home}/wpilib/wpilib.properties" />
+	<property file="build.properties" />
+	<property file="${user.home}/wpilib/java/${version}/ant/build.properties" />
+
+	<import file="${wpilib.ant.dir}/build.xml" />
+	<target name="test-for-base">
+		<echo message="base found, running jar-as-lib target" />
+		<ant dir="${Ohm.dir}" antfile="build.xml" inheritall="false" target="jar-as-lib" />
+		<echo message="done running base jar target" />
+</target>
+<target name="compile" depends="test-for-base" description="Compile the source code.">
+	<mkdir dir="${build.dir}" />
+	<path id="classpath.path">
+		<fileset dir="${userLibs.dir}" includes="*.jar" />
+		<fileset dir="${Ohm.dir}/export" includes="*.jar" />
+		<fileset file="${wpilib.jar}" />
+		<fileset file="${networktables.jar}" />
+		<fileset file="${opencv.jar}" />
+		<fileset file="${cscore.jar}" />
+		<fileset dir="${userLibs}" erroronmissingdir="false" />
 	</path>
-	<import file="${wpilib.ant.dir}/build.xml"/>
-	<target name="jar" depends="compile">
-		<echo>[athena-jar] Making jar ${dist.jar}.</echo>
-		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${build.jars}" />
 
-		<echo>[athena-jar] Copying jars to ${build.jars}.</echo>
-		<copy todir="${build.jars}" flatten="true">
-			<path refid="classpath.path"/>
-			<!-- We need to copy jars from projects that are referenced to destination as well  -->
-			<fail>
-			</fail>
-			<path refid="eclipse.classpath"/>
+	<pathconvert property="classpathProp" refid="classpath.path" />
+	<echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>
 
-		</copy>
-
-		<jar destfile="${dist.jar}" update="false">
-			<manifest>
-				<attribute name="Main-Class" value="edu.wpi.first.wpilibj.RobotBase"/>
-				<attribute name="Robot-Class" value="${robot.class}"/>
-				<attribute name="Class-Path" value="."/>
-			</manifest>
-
-			<fileset dir="${build.dir}" includes="**/*.class"/>
-
-			<zipgroupfileset dir="${build.jars}"/>
-		</jar>
-	</target>
-	<target name="compile" description="Compile the source code.">
-		<mkdir dir="${build.dir}"/>
-		<path id="classpath.path">
-			<fileset dir="${userLibs.dir}" includes="*.jar"/>
-			<fileset file="${wpilib.jar}"/>
-			<fileset file="${networktables.jar}"/>
-			<fileset file="${opencv.jar}"/>
-			<fileset file="${cscore.jar}"/>
-			<fileset dir="${userLibs}" erroronmissingdir="false"/>
-			 <fileset dir="/C:/Users/amind/git/Ohm/Ohm/bin/" >
-			        <include name="**/*.class" />
-			 </fileset>
-		</path>
-
-		<pathconvert property="classpathProp" refid="classpath.path"/>
-		<echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>
-
-		<javac srcdir="${src.dir}"
-     destdir="${build.dir}"
-     includeAntRuntime="no"
-     includeJavaRuntime="no"
-     classpathref="classpath.path"
-     target="${ant.java.version}"
-     source="${ant.java.version}"
-     compiler="javac${ant.java.version}"
-     debug="true">
-		</javac>
-	</target>
+	<javac srcdir="${src.dir}" destdir="${build.dir}" includeAntRuntime="no" includeJavaRuntime="no" classpathref="classpath.path" target="${ant.java.version}" source="${ant.java.version}" compiler="javac${ant.java.version}" debug="true">
+	</javac>
+</target>
 </project>
