@@ -1,7 +1,10 @@
 package org.usfirst.frc.team1389.robot;
 
+import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
 import com.team1389.hardware.outputs.hardware.VictorHardware;
+import com.team1389.hardware.outputs.software.DigitalOut;
 import com.team1389.hardware.registry.Registry;
+import com.team1389.hardware.registry.port_types.PCM;
 import com.team1389.hardware.registry.port_types.PWM;
 import com.team1389.watch.Watcher;
 
@@ -13,7 +16,8 @@ public class Robot extends IterativeRobot {
 	
 	//Add hardware here
 	VictorHardware victor=new VictorHardware(false,new PWM(0),registry);
-
+	DigitalOut piston=new DoubleSolenoidHardware(new PCM(4), new PCM(5), registry).getDigitalOut();
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
