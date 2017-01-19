@@ -1,9 +1,12 @@
 package org.usfirst.frc.team1389.robot;
 
 import com.team1389.hardware.inputs.hardware.JoystickHardware;
+
 import com.team1389.hardware.inputs.hardware.SwitchHardware;
 import com.team1389.hardware.inputs.software.DigitalIn;
-import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
+//import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+
 import com.team1389.hardware.outputs.hardware.VictorHardware;
 import com.team1389.hardware.outputs.software.DigitalOut;
 import com.team1389.hardware.registry.Registry;
@@ -22,7 +25,7 @@ public class Robot extends IterativeRobot {
 	
 	//Add hardware here
 	VictorHardware victor=new VictorHardware(false,new PWM(0),registry);
-	DigitalOut piston=new DoubleSolenoidHardware(new PCM(4), new PCM(5), registry).getDigitalOut();
+	DoubleSolenoid piston= new  DoubleSolenoid(4,5); //(new PCM(4), new PCM(5), registry).getDigitalOut();
 	DigitalIn hallEffect = new SwitchHardware(new DIO(0), registry).getSwitchInput();
 	DigitalIn button = new JoystickHardware(0).getButton(3);
 				
@@ -36,6 +39,7 @@ public class Robot extends IterativeRobot {
 		watcher.setLogLocation(Watcher.DEFAULT_LOG); //will overwrite the log file every time the code reboots
 		watcher.watch(hallEffect.getWatchable("hallEffect"));
 		watcher.watch(button.getWatchable("button"));
+		//watcher.watch(piston.getWatchable("piston val"));
 		}
 
 	@Override
@@ -56,11 +60,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		watcher.publish(Watcher.DASHBOARD);
 		piston.set(button.get());
-		
-		
-		
-		
-	}
+		}
 
 	/**
 	 * This function is called periodically during test mode
@@ -69,5 +69,8 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 	}
 	
+	public void setSolenoid(boolean val){
+		((val==true)?piston)
+	}
 
 }
