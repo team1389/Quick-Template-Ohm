@@ -27,7 +27,8 @@ public class Robot extends IterativeRobot {
 	VictorHardware victor=new VictorHardware(false,new PWM(0),registry);
 	DoubleSolenoid piston= new  DoubleSolenoid(4,5); //(new PCM(4), new PCM(5), registry).getDigitalOut();
 	DigitalIn hallEffect = new SwitchHardware(new DIO(0), registry).getSwitchInput();
-	DigitalIn button = new JoystickHardware(0).getButton(3);
+
+	DigitalIn button = new JoystickHardware(0).getButton(2);
 				
 	
 	/**
