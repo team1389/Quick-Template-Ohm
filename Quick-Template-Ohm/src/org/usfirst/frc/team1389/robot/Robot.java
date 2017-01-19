@@ -1,14 +1,20 @@
 package org.usfirst.frc.team1389.robot;
 
+import com.team1389.hardware.inputs.hardware.JoystickHardware;
+import com.team1389.hardware.inputs.hardware.SwitchHardware;
+import com.team1389.hardware.inputs.software.DigitalIn;
 import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
 import com.team1389.hardware.outputs.hardware.VictorHardware;
 import com.team1389.hardware.outputs.software.DigitalOut;
 import com.team1389.hardware.registry.Registry;
+import com.team1389.hardware.registry.port_types.DIO;
 import com.team1389.hardware.registry.port_types.PCM;
 import com.team1389.hardware.registry.port_types.PWM;
 import com.team1389.watch.Watcher;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
 
 public class Robot extends IterativeRobot {
 	Watcher watcher = new Watcher();
@@ -17,6 +23,9 @@ public class Robot extends IterativeRobot {
 	//Add hardware here
 	VictorHardware victor=new VictorHardware(false,new PWM(0),registry);
 	DigitalOut piston=new DoubleSolenoidHardware(new PCM(4), new PCM(5), registry).getDigitalOut();
+	DigitalIn hallEffect = new SwitchHardware(new DIO(0), registry).getSwitchInput();
+	DigitalIn button = new JoystickHardware(0).getButton(0);
+				
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -25,7 +34,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		watcher.setLogLocation(Watcher.DEFAULT_LOG); //will overwrite the log file every time the code reboots
-	}
+		watcher.watch(hallEffect.getWatchable("hallEffect"));
+		}
 
 	@Override
 	public void autonomousInit() {
@@ -44,6 +54,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		watcher.publish(Watcher.DASHBOARD);
+		piston.set(button.get());
+		
+		
+		
+		
 	}
 
 	/**
@@ -52,4 +67,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 	}
+	
+
 }
