@@ -62,7 +62,7 @@
 			<fileset file="${opencv.jar}" />
 			<fileset file="${cscore.jar}" />
 			<fileset file="export/test.jar" />
-			<fileset dir="${teambase}/lib/" />
+			<fileset dir="${teambase}/lib/" includes="*.jar" />
 			<fileset dir="${userLibs}" erroronmissingdir="false" />
 		</path>
 
@@ -71,5 +71,75 @@
 
 		<javac srcdir="${src.dir}" destdir="${build.dir}" includeAntRuntime="no" includeJavaRuntime="no" classpathref="classpath.path" target="${ant.java.version}" source="${ant.java.version}" compiler="javac${ant.java.version}" debug="true">
 		</javac>
+	</target>
+	<target name="deploy" depends="clean,jar,get-target-ip,dependencies" description="Deploy the jar and start the program running.">
+
+		<deploy-libs libs.name="WPI_Native_Libraries" libs.basedir="${wpilib.native.lib}" libs.deployDir="${libDeploy.dir}">
+			<libs.local>
+				<fileset id="wpiNativeLibs.local" dir="${wpilib.native.lib}">
+					<include name="libHALAthena.so"/>
+					<include name="libntcore.so"/>
+					<include name="libwpiutil.so"/>
+					<include name="libopencv*.so.3.1"/>
+					<include name="libcscore.so"/>
+					<include name="libopencv_java310.so"/>
+					<include name="libwpilibJavaJNI.so"/>
+					
+				</fileset>
+			</libs.local>
+		</deploy-libs>
+
+		<deploy-libs libs.name="User_Libraries" libs.basedir="${userLibs.dir}" libs.deployDir="${libDeploy.dir}">
+			<libs.local>
+				<fileset dir="${userLibs.dir}">
+					<include name="**/*.so"/>
+				</fileset>
+			</libs.local>
+		</deploy-libs>
+		<echo>[athena-deploy] ${libDeploy.dir}.</echo>
+		<echo>[athena-deploy] ${username}@${target}:${deploy.dir}.</echo>
+		<echo>[athena-deploy] Copying code over.</echo>
+		<!-- Team 1389 -->
+		<scp file="${teambase}/lib/native/libTalonSRXLib.so" todir="${adminUsername}@${target}:${libDeploy.dir}" password="${password}" trust="true"/>
+		<scp file="${dist.jar}" todir="${username}@${target}:${deploy.dir}" password="${password}" trust="true"/>
+
+		<sshexec host="${target}"
+	         username="${adminUsername}"
+	         password="${password}"
+	         trust="true"
+	         command="ldconfig" />
+
+		<!-- Suppress the exit status so that if no netconsole was running then
+	          it doesn't show up red on the output. -->
+		<sshexec host="${target}"
+	               username="admin"
+	               password="${password}"
+	               trust="true"
+	               failonerror="false"
+	               command="killall -q netconsole-host || :"/>
+
+		<deploy-libs libs.name="netconsole-host" libs.basedir="${wpilib.ant.dir}" libs.deployDir="/usr/local/frc/bin">
+			<libs.local>
+				<fileset id="netconsole.local" dir="${wpilib.ant.dir}">
+					<include name="netconsole-host"/>
+				</fileset>
+			</libs.local>
+		</deploy-libs>
+
+		<scp file="${wpilib.ant.dir}/robotCommand" todir="${username}@${target}:${command.dir}" password="${password}" trust="true"/>
+
+		<echo>[athena-deploy] Starting program.</echo>
+		<sshexec host="${target}"
+	       username="${username}"
+	       password="${password}"
+	       trust="true"
+		   failonerror="false"
+	       command="${deploy.kill.command};"/>
+
+		<sshexec host="${target}"
+	         username="${username}"
+	         password="${password}"
+	         trust="true"
+	         command="sync" />
 	</target>
 </project>
