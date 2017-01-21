@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
 	DoubleSolenoid piston= new  DoubleSolenoid(4,5); //(new PCM(4), new PCM(5), registry).getDigitalOut();
 	DigitalIn hallEffect = new SwitchHardware(new DIO(0), registry).getSwitchInput();
 
-	DigitalIn button = new JoystickHardware(0).getButton(2);
+	DigitalIn button = new JoystickHardware(0).getButton(2).getToggled();
 				
 	
 	/**
