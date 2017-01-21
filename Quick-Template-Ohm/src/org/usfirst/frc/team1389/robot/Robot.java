@@ -6,6 +6,7 @@ import com.team1389.hardware.inputs.hardware.SwitchHardware;
 import com.team1389.hardware.inputs.software.DigitalIn;
 //import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import com.team1389.hardware.outputs.hardware.VictorHardware;
 import com.team1389.hardware.outputs.software.DigitalOut;
@@ -14,6 +15,7 @@ import com.team1389.hardware.registry.port_types.DIO;
 import com.team1389.hardware.registry.port_types.PCM;
 import com.team1389.hardware.registry.port_types.PWM;
 import com.team1389.watch.Watcher;
+import com.team1389.watch.info.StringInfo;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -41,8 +43,11 @@ public class Robot extends IterativeRobot {
 		watcher.watch(hallEffect.getWatchable("hallEffect"));
 		watcher.watch(button.getWatchable("button"));
 		//watcher.watch(piston.getWatchable("piston val"));
+		watcher.watch(new StringInfo("PistonPosition", () -> piston.get().name()));
+	
 		}
 
+	
 	@Override
 	public void autonomousInit() {
 	}
@@ -60,7 +65,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		watcher.publish(Watcher.DASHBOARD);
-		piston.set(button.get());
+		piston.set(button.get()?Value.kForward: Value.kReverse);
 		}
 
 	/**
@@ -70,8 +75,6 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 	}
 	
-	public void setSolenoid(boolean val){
-		((val==true)?piston)
-	}
+	
 
 }
