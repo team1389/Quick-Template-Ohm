@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1389.robot;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.team1389.hardware.outputs.hardware.VictorHardware;
 import com.team1389.hardware.registry.Registry;
 import com.team1389.hardware.registry.port_types.PWM;
@@ -10,17 +12,18 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 public class Robot extends IterativeRobot {
 	Watcher watcher = new Watcher();
 	Registry registry = new Registry();
-	
-	//Add hardware here
-	VictorHardware victor=new VictorHardware(false,new PWM(0),registry);
+
+	// Add hardware here
+	VictorHardware victor = new VictorHardware(false, new PWM(0), registry);
 
 	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
+	 * This function is run when the robot is first started up and should be used for any
+	 * initialization code.
 	 */
 	@Override
 	public void robotInit() {
-		watcher.setLogLocation(Watcher.DEFAULT_LOG); //will overwrite the log file every time the code reboots
+		CompletableFuture.runAsync(Watcher::updateWatchers);
+		watcher.outputToDashboard();
 	}
 
 	@Override
@@ -39,7 +42,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		watcher.publish(Watcher.DASHBOARD);
 	}
 
 	/**
