@@ -35,8 +35,10 @@ public class Robot extends IterativeRobot {
 				pc -> setSpeed = talon.getSpeedOutput(pc));
 		setSpeed = talon.getSpeedOutput(new PIDConstants(2.0, 1.0e-5, 50, 0.4));
 		getSpeed = new DashboardScalarInput("Input Speed", Watcher.DASHBOARD, 1.0);
+		
 		watcher.watch(talon.getSpeedInput().getWatchable("Actual Speed"), tuner,
 				talon.getVoltageInput().getWatchable("voltage"));
+		
 		watcher.outputToDashboard();
 		CompletableFuture.runAsync(Watcher::updateWatchers);
 	}
