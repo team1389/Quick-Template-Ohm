@@ -1,2 +1,6 @@
 /bin/
-/build//export//dist/
+/build/
+/build/*
+/export/
+/dist/
+/bin/
