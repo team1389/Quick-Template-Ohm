@@ -5,16 +5,15 @@ import java.util.concurrent.CompletableFuture;
 import com.team1389.hardware.inputs.hardware.JoystickHardware;
 import com.team1389.hardware.inputs.hardware.SwitchHardware;
 import com.team1389.hardware.inputs.software.DigitalIn;
+import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
 import com.team1389.hardware.outputs.hardware.VictorHardware;
+import com.team1389.hardware.outputs.software.DigitalOut;
 import com.team1389.hardware.registry.Registry;
 import com.team1389.hardware.registry.port_types.DIO;
+import com.team1389.hardware.registry.port_types.PCM;
 import com.team1389.hardware.registry.port_types.PWM;
 import com.team1389.watch.Watcher;
-import com.team1389.watch.info.StringInfo;
 
-//import com.team1389.hardware.outputs.hardware.DoubleSolenoidHardware;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class Robot extends IterativeRobot {
@@ -23,9 +22,8 @@ public class Robot extends IterativeRobot {
 
 	// Add hardware here
 	VictorHardware victor = new VictorHardware(false, new PWM(0), registry);
-	DoubleSolenoid piston = new DoubleSolenoid(4, 5); // (new PCM(4), new PCM(5),
-														// registry).getDigitalOut();
-	DigitalIn hallEffect = new SwitchHardware(new DIO(0), registry).getSwitchInput();
+	DigitalOut piston = new DoubleSolenoidHardware(new PCM(4), new PCM(5), registry).getDigitalOut();// registry).getDigitalOut();
+	DigitalIn hallEffect = new SwitchHardware(new DIO(1), registry).getSwitchInput();
 
 	DigitalIn button = new JoystickHardware(0).getButton(2).getToggled();
 
@@ -41,9 +39,7 @@ public class Robot extends IterativeRobot {
 		CompletableFuture.runAsync(Watcher::updateWatchers);
 		watcher.watch(hallEffect.getWatchable("hallEffect"));
 		watcher.watch(button.getWatchable("button"));
-		// watcher.watch(piston.getWatchable("piston val"));
-		watcher.watch(new StringInfo("PistonPosition", () -> piston.get().name()));
-
+		watcher.watch(piston.getWatchable("piston val"));
 	}
 
 	@Override
@@ -62,7 +58,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		piston.set(button.get() ? Value.kForward : Value.kReverse);
+		piston.set(button.get());
 	}
 
 	/**
