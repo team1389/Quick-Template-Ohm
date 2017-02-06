@@ -2,9 +2,10 @@ package org.usfirst.frc.team1389.robot;
 
 import java.util.concurrent.CompletableFuture;
 
-import com.team1389.hardware.outputs.hardware.VictorHardware;
+import com.team1389.hardware.inputs.hardware.DashboardScalarInput;
+import com.team1389.hardware.outputs.hardware.CANTalonHardware;
 import com.team1389.hardware.registry.Registry;
-import com.team1389.hardware.registry.port_types.PWM;
+import com.team1389.hardware.registry.port_types.CAN;
 import com.team1389.watch.Watcher;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -13,8 +14,8 @@ public class Robot extends IterativeRobot {
 	Watcher watcher = new Watcher();
 	Registry registry = new Registry();
 
-	// Add hardware here
-	VictorHardware victor = new VictorHardware(false, new PWM(0), registry);
+	CANTalonHardware talon = new CANTalonHardware(false, new CAN(4), registry);
+	DashboardScalarInput voltage = new DashboardScalarInput("voltage", Watcher.DASHBOARD, 0.0);
 
 	/**
 	 * This function is run when the robot is first started up and should be used for any
@@ -42,6 +43,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		talon.getVoltageOutput().set(voltage.get());
 	}
 
 	/**
