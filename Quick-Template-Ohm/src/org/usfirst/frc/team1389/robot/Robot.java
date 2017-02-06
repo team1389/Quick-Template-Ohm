@@ -40,6 +40,8 @@ public class Robot extends IterativeRobot {
 		watcher.watch(hallEffect.getWatchable("hallEffect"));
 		watcher.watch(button.getWatchable("button"));
 		watcher.watch(piston.getWatchable("piston val"));
+		CompletableFuture.runAsync(Watcher::updateWatchers);
+		watcher.outputToDashboard();
 	}
 
 	@Override
