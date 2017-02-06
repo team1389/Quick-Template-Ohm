@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.team1389.hardware.inputs.hardware.DashboardScalarInput;
 import com.team1389.hardware.outputs.hardware.CANTalonHardware;
+import com.team1389.hardware.outputs.software.PercentOut;
 import com.team1389.hardware.registry.Registry;
 import com.team1389.hardware.registry.port_types.CAN;
 import com.team1389.watch.Watcher;
@@ -14,8 +15,11 @@ public class Robot extends IterativeRobot {
 	Watcher watcher = new Watcher();
 	Registry registry = new Registry();
 
-	CANTalonHardware talon = new CANTalonHardware(false, new CAN(4), registry);
+	CANTalonHardware talon = new CANTalonHardware(true, new CAN(9), registry);
+	//CANTalonHardware talon2 = new CANTalonHardware(true, new CAN(5), registry);
+
 	DashboardScalarInput voltage = new DashboardScalarInput("voltage", Watcher.DASHBOARD, 0.0);
+	PercentOut voltageOut = talon.getVoltageOutput()/*.addFollowers(talon2.getVoltageOutput())*/;
 
 	/**
 	 * This function is run when the robot is first started up and should be used for any
@@ -24,6 +28,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		CompletableFuture.runAsync(Watcher::updateWatchers);
+		watcher.watch(voltageOut.getWatchable("voltageOut"), talon.getPositionInput().getWatchable("position"));
 		watcher.outputToDashboard();
 	}
 
@@ -43,7 +48,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		talon.getVoltageOutput().set(voltage.get());
+		voltageOut.set(voltage.get());
 	}
 
 	/**
