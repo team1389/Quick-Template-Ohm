@@ -22,7 +22,7 @@ public class Robot extends IterativeRobot{
 	
 	//Add hardware here
 	VictorHardware victor = new VictorHardware(false, new PWM(0), registry);
-	JoystickHardware joystick = new JoystickHardware(0);
+	DigitalIn switchingCamerasButton = new JoystickHardware(0).getButton(2).latched();
 	
 	/**
 	 * This function is run when the robot is first started up and should be used for any
